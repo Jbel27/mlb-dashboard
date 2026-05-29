@@ -1,240 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MLB Central Divisions Dashboard</title>
+```html
+<script>
+  const standingsUrl = 'https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings';
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  async function loadStandings() {
+    try {
+      const response = await fetch(standingsUrl);
+      const data = await response.json();
+
+      const children = data.children;
+
+      const alCentral = children.find(group =>
+        group.name.includes('American League Central')
+      );
+
+      const nlCentral = children.find(group =>
+        group.name.includes('National League Central')
+      );
+
+      renderDivision('al-central-body', alCentral.standings.entries);
+      renderDivision('nl-central-body', nlCentral.standings.entries);
+
+      const now = new Date();
+
+      document.getElementById('updated-time').innerText =
+        `Last Updated: ${now.toLocaleString()}`;
+
+    } catch (error) {
+      console.error(error);
+
+      document.getElementById('al-central-body').innerHTML =
+        '<tr><td colspan="4" class="loading">Failed to load standings</td></tr>';
+
+      document.getElementById('nl-central-body').innerHTML =
+        '<tr><td colspan="4" class="loading">Failed to load standings</td></tr>';
     }
+  }
 
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #0f172a;
-      color: white;
-      overflow: hidden;
-    }
+  function renderDivision(elementId, teams) {
+    const tbody = document.getElementById(elementId);
 
-    .container {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 25px;
-      gap: 20px;
-    }
+    tbody.innerHTML = '';
 
-    .header {
-      text-align: center;
-      font-size: 48px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      color: #f8fafc;
-      padding-bottom: 10px;
-      border-bottom: 3px solid #334155;
-    }
+    teams.forEach(team => {
 
-    .boards {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
-    }
+      const stats = {};
 
-    .division-card {
-      background: #1e293b;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.35);
-      display: flex;
-      flex-direction: column;
-    }
+      team.stats.forEach(stat => {
+        stats[stat.name] = stat.displayValue;
+      });
 
-    .division-title {
-      text-align: center;
-      font-size: 34px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid #475569;
-    }
+      const tr = document.createElement('tr');
 
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
+      tr.innerHTML = `
+        <td class="team">${team.team.displayName}</td>
+        <td>${stats.wins || '-'}</td>
+        <td>${stats.losses || '-'}</td>
+        <td>${stats.gamesBehind || '0'}</td>
+      `;
 
-    .table th {
-      text-align: left;
-      padding: 12px 10px;
-      font-size: 20px;
-      background: #334155;
-      color: #f8fafc;
-    }
+      tbody.appendChild(tr);
+    });
+  }
 
-    .table td {
-      padding: 14px 10px;
-      font-size: 22px;
-      border-bottom: 1px solid #334155;
-    }
+  loadStandings();
 
-    .table tr:nth-child(even) {
-      background: rgba(255,255,255,0.03);
-    }
+  setInterval(loadStandings, 300000);
+</script>
+```
 
-    .team {
-      font-weight: bold;
-    }
-
-    .updated {
-      text-align: center;
-      font-size: 18px;
-      color: #cbd5e1;
-      padding-top: 10px;
-    }
-
-    .loading {
-      text-align: center;
-      font-size: 22px;
-      padding-top: 40px;
-      color: #94a3b8;
-    }
-
-    @media (max-width: 1200px) {
-      .boards {
-        grid-template-columns: 1fr;
-      }
-
-      .header {
-        font-size: 36px;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <div class="header">
-      MLB CENTRAL DIVISION STANDINGS
-    </div>
-
-    <div class="boards">
-
-      <div class="division-card">
-        <div class="division-title">American League Central</div>
-
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Team</th>
-              <th>W</th>
-              <th>L</th>
-              <th>GB</th>
-            </tr>
-          </thead>
-          <tbody id="al-central-body">
-            <tr>
-              <td colspan="4" class="loading">Loading standings...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="division-card">
-        <div class="division-title">National League Central</div>
-
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Team</th>
-              <th>W</th>
-              <th>L</th>
-              <th>GB</th>
-            </tr>
-          </thead>
-          <tbody id="nl-central-body">
-            <tr>
-              <td colspan="4" class="loading">Loading standings...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-    </div>
-
-    <div class="updated" id="updated-time">
-      Updating standings...
-    </div>
-  </div>
-
-  <script>
-    const standingsUrl = 'https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=2025&standingsTypes=regularSeason';
-
-    async function loadStandings() {
-      try {
-        const response = await fetch(standingsUrl);
-        const data = await response.json();
-
-        const records = data.records;
-
-        const alCentral = records.find(r =>
-          r.league.name === 'American League' &&
-          r.division.name.includes('Central')
-        );
-
-        const nlCentral = records.find(r =>
-          r.league.name === 'National League' &&
-          r.division.name.includes('Central')
-        );
-
-        renderDivision('al-central-body', alCentral.teamRecords);
-        renderDivision('nl-central-body', nlCentral.teamRecords);
-
-        const now = new Date();
-        document.getElementById('updated-time').innerText =
-          `Last Updated: ${now.toLocaleString()}`;
-
-      } catch (error) {
-        console.error(error);
-
-        document.getElementById('al-central-body').innerHTML =
-          '<tr><td colspan="4" class="loading">Failed to load standings</td></tr>';
-
-        document.getElementById('nl-central-body').innerHTML =
-          '<tr><td colspan="4" class="loading">Failed to load standings</td></tr>';
-      }
-    }
-
-    function renderDivision(elementId, teams) {
-      const tbody = document.getElementById(elementId);
-
-      tbody.innerHTML = '';
-
-      teams
-        .sort((a, b) => b.wins - a.wins)
-        .forEach(team => {
-          const tr = document.createElement('tr');
-
-          tr.innerHTML = `
-            <td class="team">${team.team.name}</td>
-            <td>${team.wins}</td>
-            <td>${team.losses}</td>
-            <td>${team.gamesBack}</td>
-          `;
-
-          tbody.appendChild(tr);
-        });
-    }
-
-    loadStandings();
-
-    setInterval(loadStandings, 300000);
-  </script>
-
-</body>
-</html>
