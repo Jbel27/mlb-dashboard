@@ -111,71 +111,73 @@
   </div>
 
 <script>
-  const standingsUrl = 'https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings';
 
-  async function loadStandings() {
-    try {
-      const response = await fetch(standingsUrl);
-      const data = await response.json();
+const standingsUrl = 'https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings';
 
-      const children = data.children;
+async function loadStandings() {
+  try {
+    const response = await fetch(standingsUrl);
+    const data = await response.json();
 
-      const alCentral = children.find(group =>
-        group.name.includes('American League Central')
-      );
+    const children = data.children;
 
-      const nlCentral = children.find(group =>
-        group.name.includes('National League Central')
-      );
+    const alCentral = children.find(group =>
+      group.name.includes('American League Central')
+    );
 
-      renderDivision('al-central-body', alCentral.standings.entries);
-      renderDivision('nl-central-body', nlCentral.standings.entries);
+    const nlCentral = children.find(group =>
+      group.name.includes('National League Central')
+    );
 
-      const now = new Date();
+    renderDivision('al-central-body', alCentral.standings.entries);
+    renderDivision('nl-central-body', nlCentral.standings.entries);
 
-      document.getElementById('updated-time').innerText =
-        `Last Updated: ${now.toLocaleString()}`;
+    const now = new Date();
 
-    } catch (error) {
-      console.error(error);
+    document.getElementById('updated-time').innerText =
+      `Last Updated: ${now.toLocaleString()}`;
 
-      document.getElementById('al-central-body').innerHTML =
-        '<tr><td colspan="4" class="loading">Failed to load standings</td></tr>';
+  } catch (error) {
+    console.error(error);
 
-      document.getElementById('nl-central-body').innerHTML =
-        '<tr><td colspan="4" class="loading">Failed to load standings</td></tr>';
-    }
+    document.getElementById('al-central-body').innerHTML =
+      '<tr><td colspan="4" class="loading">Failed to load standings</td></tr>';
+
+    document.getElementById('nl-central-body').innerHTML =
+      '<tr><td colspan="4" class="loading">Failed to load standings</td></tr>';
   }
+}
 
-  function renderDivision(elementId, teams) {
-    const tbody = document.getElementById(elementId);
+function renderDivision(elementId, teams) {
+  const tbody = document.getElementById(elementId);
 
-    tbody.innerHTML = '';
+  tbody.innerHTML = '';
 
-    teams.forEach(team => {
+  teams.forEach(team => {
 
-      const stats = {};
+    const stats = {};
 
-      team.stats.forEach(stat => {
-        stats[stat.name] = stat.displayValue;
-      });
-
-      const tr = document.createElement('tr');
-
-      tr.innerHTML = `
-        <td class="team">${team.team.displayName}</td>
-        <td>${stats.wins || '-'}</td>
-        <td>${stats.losses || '-'}</td>
-        <td>${stats.gamesBehind || '0'}</td>
-      `;
-
-      tbody.appendChild(tr);
+    team.stats.forEach(stat => {
+      stats[stat.name] = stat.displayValue;
     });
-  }
 
-  loadStandings();
+    const tr = document.createElement('tr');
 
-  setInterval(loadStandings, 300000);
+    tr.innerHTML = `
+      <td class="team">${team.team.displayName}</td>
+      <td>${stats.wins || '-'}</td>
+      <td>${stats.losses || '-'}</td>
+      <td>${stats.gamesBehind || '0'}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+loadStandings();
+
+setInterval(loadStandings, 300000);
+
 </script>
 
 
