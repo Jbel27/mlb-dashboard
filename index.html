@@ -110,85 +110,92 @@
     Loading standings...
   </div>
 
-  <script>
+  ```html id="9t2kq7"
+<script>
 
-    const standingsUrl = 'https://api.allorigins.win/raw?url=https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings';
+async function loadStandings() {
 
-    async function loadStandings() {
+  try {
 
-      try {
+    const response = await fetch(
+      'https://api.allorigins.win/raw?url=https://www.thesportsdb.com/api/v1/json/3/lookuptable.php?l=4424&s=2025'
+    );
 
-        const response = await fetch(standingsUrl);
-        const data = await response.json();
+    const data = await response.json();
 
-        const groups = data.children;
+    const table = data.table;
 
-        const alCentral = groups.find(g =>
-          g.name.includes('American League Central')
-        );
+    const alTeams = [
+      'Cleveland Guardians',
+      'Chicago White Sox',
+      'Minnesota Twins',
+      'Kansas City Royals',
+      'Detroit Tigers'
+    ];
 
-        const nlCentral = groups.find(g =>
-          g.name.includes('National League Central')
-        );
+    const nlTeams = [
+      'Milwaukee Brewers',
+      'Chicago Cubs',
+      'St. Louis Cardinals',
+      'Cincinnati Reds',
+      'Pittsburgh Pirates'
+    ];
 
-        renderDivision(
-          'al-central-body',
-          alCentral.standings.entries
-        );
+    const alCentral = table.filter(team =>
+      alTeams.includes(team.strTeam)
+    );
 
-        renderDivision(
-          'nl-central-body',
-          nlCentral.standings.entries
-        );
+    const nlCentral = table.filter(team =>
+      nlTeams.includes(team.strTeam)
+    );
 
-        document.getElementById('updated-time').innerText =
-          'Last Updated: ' + new Date().toLocaleString();
+    renderDivision('al-central-body', alCentral);
 
-      } catch (err) {
+    renderDivision('nl-central-body', nlCentral);
 
-        console.error(err);
+    document.getElementById('updated-time').innerText =
+      'Last Updated: ' + new Date().toLocaleString();
 
-        document.getElementById('updated-time').innerText =
-          'Failed to load standings';
+  } catch (err) {
 
-      }
+    console.error(err);
 
-    }
+    document.getElementById('updated-time').innerText =
+      'Failed to load standings';
 
-    function renderDivision(id, teams) {
+  }
 
-      const tbody = document.getElementById(id);
+}
 
-      tbody.innerHTML = '';
+function renderDivision(id, teams) {
 
-      teams.forEach(team => {
+  const tbody = document.getElementById(id);
 
-        const stats = {};
+  tbody.innerHTML = '';
 
-        team.stats.forEach(stat => {
-          stats[stat.name] = stat.displayValue;
-        });
+  teams.forEach(team => {
 
-        const row = document.createElement('tr');
+    const row = document.createElement('tr');
 
-        row.innerHTML = `
-          <td>${team.team.displayName}</td>
-          <td>${stats.wins || '-'}</td>
-          <td>${stats.losses || '-'}</td>
-          <td>${stats.gamesBehind || '0'}</td>
-        `;
+    row.innerHTML = `
+      <td>${team.strTeam}</td>
+      <td>${team.intWin}</td>
+      <td>${team.intLoss}</td>
+      <td>${team.intPoints}</td>
+    `;
 
-        tbody.appendChild(row);
+    tbody.appendChild(row);
 
-      });
+  });
 
-    }
+}
 
-    loadStandings();
+loadStandings();
 
-    setInterval(loadStandings, 300000);
+setInterval(loadStandings, 300000);
 
-  </script>
+</script>
+
 
 </body>
 </html>
