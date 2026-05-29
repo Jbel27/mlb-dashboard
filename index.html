@@ -1,199 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MLB Central Standings</title>
-
   <style>
     body {
       margin: 0;
-      padding: 20px;
       background: #0f172a;
+      font-family: Arial;
       color: white;
-      font-family: Arial, sans-serif;
     }
 
     h1 {
       text-align: center;
-      font-size: 48px;
-      margin-bottom: 30px;
-    }
-
-    .container {
-      display: flex;
-      gap: 20px;
-    }
-
-    .division {
-      flex: 1;
-      background: #1e293b;
-      border-radius: 15px;
       padding: 20px;
+      font-size: 44px;
     }
 
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 32px;
+    .grid {
+      display: flex;
+      height: 90vh;
+      gap: 10px;
+      padding: 10px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      background: #334155;
-      padding: 12px;
-      font-size: 20px;
-    }
-
-    td {
-      padding: 12px;
-      border-bottom: 1px solid #334155;
-      font-size: 20px;
-    }
-
-    .updated {
-      text-align: center;
-      margin-top: 20px;
-      color: #cbd5e1;
-      font-size: 18px;
+    iframe {
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+      background: white;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>MLB CENTRAL DIVISION STANDINGS</h1>
+  <h1>MLB CENTRAL DIVISIONS</h1>
 
-  <div class="container">
+  <div class="grid">
 
-    <div class="division">
-      <h2>American League Central</h2>
+    <!-- AL Central -->
+    <iframe
+      src="https://www.espn.com/mlb/standings/_/group/2"
+      loading="lazy">
+    </iframe>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>W</th>
-            <th>L</th>
-            <th>GB</th>
-          </tr>
-        </thead>
-
-        <tbody id="al-central-body"></tbody>
-      </table>
-    </div>
-
-    <div class="division">
-      <h2>National League Central</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>W</th>
-            <th>L</th>
-            <th>GB</th>
-          </tr>
-        </thead>
-
-        <tbody id="nl-central-body"></tbody>
-      </table>
-    </div>
+    <!-- NL Central -->
+    <iframe
+      src="https://www.espn.com/mlb/standings/_/group/1"
+      loading="lazy">
+    </iframe>
 
   </div>
-
-  <div class="updated" id="updated-time">
-    Loading standings...
-  </div>
-
-<script>
-
-async function loadStandings() {
-
-  try {
-
-    const response = await fetch(
-      'https://api.allorigins.win/raw?url=https://www.thesportsdb.com/api/v1/json/3/lookuptable.php?l=4424&s=2025'
-    );
-
-    const data = await response.json();
-
-    const table = data.table;
-
-    const alTeams = [
-      'Cleveland Guardians',
-      'Chicago White Sox',
-      'Minnesota Twins',
-      'Kansas City Royals',
-      'Detroit Tigers'
-    ];
-
-    const nlTeams = [
-      'Milwaukee Brewers',
-      'Chicago Cubs',
-      'St. Louis Cardinals',
-      'Cincinnati Reds',
-      'Pittsburgh Pirates'
-    ];
-
-    const alCentral = table.filter(team =>
-      alTeams.includes(team.strTeam)
-    );
-
-    const nlCentral = table.filter(team =>
-      nlTeams.includes(team.strTeam)
-    );
-
-    renderDivision('al-central-body', alCentral);
-
-    renderDivision('nl-central-body', nlCentral);
-
-    document.getElementById('updated-time').innerText =
-      'Last Updated: ' + new Date().toLocaleString();
-
-  } catch (err) {
-
-    console.error(err);
-
-    document.getElementById('updated-time').innerText =
-      'Failed to load standings';
-
-  }
-
-}
-
-function renderDivision(id, teams) {
-
-  const tbody = document.getElementById(id);
-
-  tbody.innerHTML = '';
-
-  teams.forEach(team => {
-
-    const row = document.createElement('tr');
-
-    row.innerHTML = `
-      <td>${team.strTeam}</td>
-      <td>${team.intWin}</td>
-      <td>${team.intLoss}</td>
-      <td>${team.intPoints}</td>
-    `;
-
-    tbody.appendChild(row);
-
-  });
-
-}
-
-loadStandings();
-
-setInterval(loadStandings, 300000);
-
-</script>
 
 </body>
 </html>
