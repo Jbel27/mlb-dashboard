@@ -109,12 +109,23 @@ Loading updates...
 <script>
 async function loadStandings() {
   try {
-    const res = await fetch(
+    const url =
       "https://api.allorigins.win/raw?url=" +
-      encodeURIComponent("https://statsapi.mlb.com/api/v1/standings")
-    );
+      encodeURIComponent("https://statsapi.mlb.com/api/v1/standings");
 
-    const data = await res.json();
+    const res = await fetch(url);
+
+    const text = await res.text();
+
+    console.log("RAW RESPONSE:", text); // IMPORTANT DEBUG STEP
+
+    const data = JSON.parse(text);
+
+    if (!data.records) {
+      console.log("No records found in API response.");
+      return;
+    }
+
     const records = data.records;
 
     records.forEach(div => {
@@ -124,12 +135,14 @@ async function loadStandings() {
         const w = team.wins;
         const l = team.losses;
 
+        console.log(name, w, l); // DEBUG
+
         // AL Central
         if (name.includes("Cleveland")) {
           document.getElementById("cle-w").innerText = w;
           document.getElementById("cle-l").innerText = l;
         }
-        if (name.includes("Chicago White Sox")) {
+        if (name.includes("White Sox")) {
           document.getElementById("cws-w").innerText = w;
           document.getElementById("cws-l").innerText = l;
         }
@@ -171,8 +184,13 @@ async function loadStandings() {
       });
     });
 
+    document.getElementById("lastUpdated").innerText =
+      "Last updated: " + new Date().toLocaleTimeString();
+
   } catch (err) {
-    console.log("Error:", err);
+    console.log("ERROR LOADING STANDINGS:", err);
+    document.getElementById("lastUpdated").innerText =
+      "Error loading data (check console)";
   }
 }
 
