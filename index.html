@@ -113,7 +113,7 @@ async function loadStandings() {
   "https://corsproxy.io/?" +
   encodeURIComponent("https://statsapi.mlb.com/api/v1/standings");
 
-const res = await fetch(url);
+const res = await fetch("https://statsapi.mlb.com/api/v1/standings");
 
     const text = await res.text();
 
