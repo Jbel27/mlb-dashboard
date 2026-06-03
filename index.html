@@ -109,9 +109,12 @@ Loading updates...
 <script>
 async function loadStandings() {
   try {
-    const res = await fetch("https://statsapi.mlb.com/api/v1/standings");
-    const data = await res.json();
+    const res = await fetch(
+      "https://api.allorigins.win/raw?url=" +
+      encodeURIComponent("https://statsapi.mlb.com/api/v1/standings")
+    );
 
+    const data = await res.json();
     const records = data.records;
 
     records.forEach(div => {
@@ -121,53 +124,45 @@ async function loadStandings() {
         const w = team.wins;
         const l = team.losses;
 
-        // ===== AL CENTRAL =====
+        // AL Central
         if (name.includes("Cleveland")) {
           document.getElementById("cle-w").innerText = w;
           document.getElementById("cle-l").innerText = l;
         }
-
-        if (name.includes("White Sox")) {
+        if (name.includes("Chicago White Sox")) {
           document.getElementById("cws-w").innerText = w;
           document.getElementById("cws-l").innerText = l;
         }
-
         if (name.includes("Minnesota")) {
           document.getElementById("min-w").innerText = w;
           document.getElementById("min-l").innerText = l;
         }
-
         if (name.includes("Kansas City")) {
           document.getElementById("kc-w").innerText = w;
           document.getElementById("kc-l").innerText = l;
         }
-
         if (name.includes("Detroit")) {
           document.getElementById("det-w").innerText = w;
           document.getElementById("det-l").innerText = l;
         }
 
-        // ===== NL CENTRAL =====
+        // NL Central
         if (name.includes("Milwaukee")) {
           document.getElementById("mil-w").innerText = w;
           document.getElementById("mil-l").innerText = l;
         }
-
         if (name.includes("Chicago Cubs")) {
           document.getElementById("chc-w").innerText = w;
           document.getElementById("chc-l").innerText = l;
         }
-
         if (name.includes("St. Louis")) {
           document.getElementById("stl-w").innerText = w;
           document.getElementById("stl-l").innerText = l;
         }
-
         if (name.includes("Cincinnati")) {
           document.getElementById("cin-w").innerText = w;
           document.getElementById("cin-l").innerText = l;
         }
-
         if (name.includes("Pittsburgh")) {
           document.getElementById("pit-w").innerText = w;
           document.getElementById("pit-l").innerText = l;
@@ -176,23 +171,14 @@ async function loadStandings() {
       });
     });
 
-    // update timestamp
-    document.getElementById("lastUpdated").innerText =
-      "Last updated: " + new Date().toLocaleTimeString();
-
   } catch (err) {
-    console.log("Error loading standings:", err);
-    document.getElementById("lastUpdated").innerText =
-      "Error loading data";
+    console.log("Error:", err);
   }
 }
 
-// initial load
 window.onload = loadStandings;
-
-// refresh every 10 minutes
 setInterval(loadStandings, 10 * 60 * 1000);
 </script>
-
+    
 </body>
 </html>
