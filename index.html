@@ -1,56 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MLB Central Standings</title>
-  <style>
-    body {
-      margin: 0;
-      background: #0f172a;
-      font-family: Arial;
-      color: white;
-    }
+<title>MLB Central Division Standings</title>
 
-    h1 {
-      text-align: center;
-      padding: 20px;
-      font-size: 44px;
-    }
+<style>
+body {
+    margin: 0;
+    background: #0f172a;
+    color: white;
+    font-family: Arial, sans-serif;
+}
 
-    .grid {
-      display: flex;
-      height: 90vh;
-      gap: 10px;
-      padding: 10px;
-    }
+h1 {
+    text-align: center;
+    font-size: 48px;
+    margin: 20px;
+}
 
-    iframe {
-      flex: 1;
-      border: none;
-      border-radius: 10px;
-      background: white;
-    }
-  </style>
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+.division {
+    flex: 1;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.division h2 {
+    text-align: center;
+    margin-top: 0;
+    font-size: 32px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #334155;
+    padding: 12px;
+    font-size: 22px;
+}
+
+td {
+    padding: 12px;
+    font-size: 20px;
+    border-bottom: 1px solid #475569;
+}
+
+.updated {
+    text-align: center;
+    font-size: 18px;
+    color: #cbd5e1;
+    margin-top: 20px;
+}
+</style>
 </head>
 
 <body>
 
-  <h1>MLB CENTRAL DIVISIONS</h1>
+<h1>MLB CENTRAL DIVISION STANDINGS</h1>
 
-  <div class="grid">
+<div class="container">
 
-    <!-- AL Central -->
-    <iframe
-      src="https://www.espn.com/mlb/standings/_/group/2"
-      loading="lazy">
-    </iframe>
+<div class="division">
+<h2>American League Central</h2>
 
-    <!-- NL Central -->
-    <iframe
-      src="https://www.espn.com/mlb/standings/_/group/1"
-      loading="lazy">
-    </iframe>
+<table>
+<tr>
+<th>Team</th>
+<th>W</th>
+<th>L</th>
+</tr>
 
-  </div>
+<tr><td>Guardians</td><td>0</td><td>0</td></tr>
+<tr><td>White Sox</td><td>0</td><td>0</td></tr>
+<tr><td>Twins</td><td>0</td><td>0</td></tr>
+<tr><td>Royals</td><td>0</td><td>0</td></tr>
+<tr><td>Tigers</td><td>0</td><td>0</td></tr>
+
+</table>
+</div>
+
+<div class="division">
+<h2>National League Central</h2>
+
+<table>
+<tr>
+<th>Team</th>
+<th>W</th>
+<th>L</th>
+</tr>
+
+<tr><td>Brewers</td><td>0</td><td>0</td></tr>
+<tr><td>Cubs</td><td>0</td><td>0</td></tr>
+<tr><td>Cardinals</td><td>0</td><td>0</td></tr>
+<tr><td>Reds</td><td>0</td><td>0</td></tr>
+<tr><td>Pirates</td><td>0</td><td>0</td></tr>
+
+</table>
+</div>
+
+</div>
+
+<div class="updated">
+Updated Daily
+</div>
 
 </body>
 </html>
