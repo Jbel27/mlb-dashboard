@@ -110,10 +110,10 @@ Loading updates...
 async function loadStandings() {
   try {
     const url =
-      "https://api.allorigins.win/raw?url=" +
-      encodeURIComponent("https://statsapi.mlb.com/api/v1/standings");
+  "https://corsproxy.io/?" +
+  encodeURIComponent("https://statsapi.mlb.com/api/v1/standings");
 
-    const res = await fetch(url);
+const res = await fetch(url);
 
     const text = await res.text();
 
