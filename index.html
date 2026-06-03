@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8" />
 <title>MLB Central Division Standings</title>
 
 <style>
@@ -51,13 +52,14 @@ td {
     padding: 12px;
     font-size: 20px;
     border-bottom: 1px solid #475569;
+    text-align: center;
 }
 
 .updated {
     text-align: center;
     font-size: 18px;
     color: #cbd5e1;
-    margin-top: 20px;
+    margin: 20px;
 }
 </style>
 </head>
@@ -68,49 +70,129 @@ td {
 
 <div class="container">
 
+<!-- AL CENTRAL -->
 <div class="division">
 <h2>American League Central</h2>
-
 <table>
-<tr>
-<th>Team</th>
-<th>W</th>
-<th>L</th>
-</tr>
+<tr><th>Team</th><th>W</th><th>L</th></tr>
 
-<tr><td>Guardians</td><td>0</td><td>0</td></tr>
-<tr><td>White Sox</td><td>0</td><td>0</td></tr>
-<tr><td>Twins</td><td>0</td><td>0</td></tr>
-<tr><td>Royals</td><td>0</td><td>0</td></tr>
-<tr><td>Tigers</td><td>0</td><td>0</td></tr>
+<tr><td>Guardians</td><td id="cle-w">0</td><td id="cle-l">0</td></tr>
+<tr><td>White Sox</td><td id="cws-w">0</td><td id="cws-l">0</td></tr>
+<tr><td>Twins</td><td id="min-w">0</td><td id="min-l">0</td></tr>
+<tr><td>Royals</td><td id="kc-w">0</td><td id="kc-l">0</td></tr>
+<tr><td>Tigers</td><td id="det-w">0</td><td id="det-l">0</td></tr>
 
 </table>
 </div>
 
+<!-- NL CENTRAL -->
 <div class="division">
 <h2>National League Central</h2>
-
 <table>
-<tr>
-<th>Team</th>
-<th>W</th>
-<th>L</th>
-</tr>
+<tr><th>Team</th><th>W</th><th>L</th></tr>
 
-<tr><td>Brewers</td><td>0</td><td>0</td></tr>
-<tr><td>Cubs</td><td>0</td><td>0</td></tr>
-<tr><td>Cardinals</td><td>0</td><td>0</td></tr>
-<tr><td>Reds</td><td>0</td><td>0</td></tr>
-<tr><td>Pirates</td><td>0</td><td>0</td></tr>
+<tr><td>Brewers</td><td id="mil-w">0</td><td id="mil-l">0</td></tr>
+<tr><td>Cubs</td><td id="chc-w">0</td><td id="chc-l">0</td></tr>
+<tr><td>Cardinals</td><td id="stl-w">0</td><td id="stl-l">0</td></tr>
+<tr><td>Reds</td><td id="cin-w">0</td><td id="cin-l">0</td></tr>
+<tr><td>Pirates</td><td id="pit-w">0</td><td id="pit-l">0</td></tr>
 
 </table>
 </div>
 
 </div>
 
-<div class="updated">
-Updated Daily
+<div class="updated" id="lastUpdated">
+Loading updates...
 </div>
+
+<script>
+async function loadStandings() {
+  try {
+    const res = await fetch("https://statsapi.mlb.com/api/v1/standings");
+    const data = await res.json();
+
+    const records = data.records;
+
+    records.forEach(div => {
+      div.teamRecords.forEach(team => {
+
+        const name = team.team.name;
+        const w = team.wins;
+        const l = team.losses;
+
+        // ===== AL CENTRAL =====
+        if (name.includes("Cleveland")) {
+          document.getElementById("cle-w").innerText = w;
+          document.getElementById("cle-l").innerText = l;
+        }
+
+        if (name.includes("White Sox")) {
+          document.getElementById("cws-w").innerText = w;
+          document.getElementById("cws-l").innerText = l;
+        }
+
+        if (name.includes("Minnesota")) {
+          document.getElementById("min-w").innerText = w;
+          document.getElementById("min-l").innerText = l;
+        }
+
+        if (name.includes("Kansas City")) {
+          document.getElementById("kc-w").innerText = w;
+          document.getElementById("kc-l").innerText = l;
+        }
+
+        if (name.includes("Detroit")) {
+          document.getElementById("det-w").innerText = w;
+          document.getElementById("det-l").innerText = l;
+        }
+
+        // ===== NL CENTRAL =====
+        if (name.includes("Milwaukee")) {
+          document.getElementById("mil-w").innerText = w;
+          document.getElementById("mil-l").innerText = l;
+        }
+
+        if (name.includes("Chicago Cubs")) {
+          document.getElementById("chc-w").innerText = w;
+          document.getElementById("chc-l").innerText = l;
+        }
+
+        if (name.includes("St. Louis")) {
+          document.getElementById("stl-w").innerText = w;
+          document.getElementById("stl-l").innerText = l;
+        }
+
+        if (name.includes("Cincinnati")) {
+          document.getElementById("cin-w").innerText = w;
+          document.getElementById("cin-l").innerText = l;
+        }
+
+        if (name.includes("Pittsburgh")) {
+          document.getElementById("pit-w").innerText = w;
+          document.getElementById("pit-l").innerText = l;
+        }
+
+      });
+    });
+
+    // update timestamp
+    document.getElementById("lastUpdated").innerText =
+      "Last updated: " + new Date().toLocaleTimeString();
+
+  } catch (err) {
+    console.log("Error loading standings:", err);
+    document.getElementById("lastUpdated").innerText =
+      "Error loading data";
+  }
+}
+
+// initial load
+window.onload = loadStandings;
+
+// refresh every 10 minutes
+setInterval(loadStandings, 10 * 60 * 1000);
+</script>
 
 </body>
 </html>
