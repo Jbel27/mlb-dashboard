@@ -121,28 +121,31 @@ async function loadStandings() {
     data.records.forEach(div => {
       div.teamRecords.forEach(team => {
 
-        // ✅ SAFE NAME
         const name = team.team?.name || "";
 
-        // ✅ THIS IS THE CRITICAL FIX (MLB correct structure)
-        const w = team.leagueRecord?.wins;
-        const l = team.leagueRecord?.losses;
+        // ✅ SUPER ROBUST WINS/LOSSES EXTRACTION
+        const w =
+          team.wins ??
+          team.leagueRecord?.wins ??
+          team.stats?.[0]?.splits?.[0]?.stat?.wins;
 
-        if (w === undefined || l === undefined) {
-          console.log("Missing W/L for:", name, team);
+        const l =
+          team.losses ??
+          team.leagueRecord?.losses ??
+          team.stats?.[0]?.splits?.[0]?.stat?.losses;
+
+        if (w == null || l == null) {
+          console.log("Missing stats:", name, team);
           return;
         }
 
         let prefix = null;
 
-        // AL CENTRAL
         if (name.includes("Cleveland")) prefix = "cle";
         else if (name.includes("White Sox")) prefix = "cws";
         else if (name.includes("Minnesota")) prefix = "min";
         else if (name.includes("Kansas City")) prefix = "kc";
         else if (name.includes("Detroit")) prefix = "det";
-
-        // NL CENTRAL
         else if (name.includes("Milwaukee")) prefix = "mil";
         else if (name.includes("Chicago Cubs")) prefix = "chc";
         else if (name.includes("St. Louis")) prefix = "stl";
