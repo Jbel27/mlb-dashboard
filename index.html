@@ -107,20 +107,6 @@ Loading updates...
 </div>
 
 <script>
-// Stable MLB Team IDs
-const teamMap = {
-  114: "cle",
-  145: "cws",
-  142: "min",
-  118: "kc",
-  116: "det",
-  158: "mil",
-  112: "chc",
-  138: "stl",
-  113: "cin",
-  134: "pit"
-};
-
 async function loadStandings() {
   try {
     const url =
@@ -131,29 +117,33 @@ async function loadStandings() {
     const data = await res.json();
 
     if (!data.records) {
-      throw new Error("No records in API response");
+      throw new Error("No records found");
     }
 
     data.records.forEach(div => {
       div.teamRecords.forEach(team => {
 
-        const teamId =
-          team.team?.id ||
-          team.team?.team?.id ||
-          team.team?.franchiseId ||
-          null;
-
-        // ✅ FIXED: this block is now correct and CLOSED properly
-        if (!teamId) {
-          console.log("NO TEAM ID FOUND:", team);
-          return;
-        }
-
-        const prefix = teamMap[teamId];
-        if (!prefix) return;
-
+        const name = team.team?.name || "";
         const w = team.wins;
         const l = team.losses;
+
+        let prefix = null;
+
+        // ===== AL CENTRAL =====
+        if (name.includes("Cleveland")) prefix = "cle";
+        else if (name.includes("Chicago White Sox")) prefix = "cws";
+        else if (name.includes("Minnesota")) prefix = "min";
+        else if (name.includes("Kansas City")) prefix = "kc";
+        else if (name.includes("Detroit")) prefix = "det";
+
+        // ===== NL CENTRAL =====
+        else if (name.includes("Milwaukee")) prefix = "mil";
+        else if (name.includes("Chicago Cubs")) prefix = "chc";
+        else if (name.includes("St. Louis")) prefix = "stl";
+        else if (name.includes("Cincinnati")) prefix = "cin";
+        else if (name.includes("Pittsburgh")) prefix = "pit";
+
+        if (!prefix) return;
 
         const wEl = document.getElementById(`${prefix}-w`);
         const lEl = document.getElementById(`${prefix}-l`);
@@ -169,7 +159,7 @@ async function loadStandings() {
       "Last updated: " + new Date().toLocaleTimeString();
 
   } catch (err) {
-    console.error("ERROR LOADING STANDINGS:", err);
+    console.error("ERROR:", err);
     document.getElementById("lastUpdated").innerText =
       "Error loading data (check console)";
   }
@@ -178,6 +168,5 @@ async function loadStandings() {
 window.onload = loadStandings;
 setInterval(loadStandings, 10 * 60 * 1000);
 </script>
-
 </body>
 </html>
