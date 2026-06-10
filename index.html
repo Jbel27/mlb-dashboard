@@ -125,7 +125,11 @@ const data = await res.json();
     records.forEach(div => {
       div.teamRecords.forEach(team => {
 
-        const name = team.team.name;
+        const name =
+  team.team?.name ||
+  team.team?.franchiseName ||
+  team.team?.teamName ||
+  "UNKNOWN";
         const w = team.wins;
         const l = team.losses;
 
