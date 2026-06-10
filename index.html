@@ -107,19 +107,18 @@ Loading updates...
 </div>
 
 <script>
-// Stable MLB Team IDs (this is the IMPORTANT FIX)
+// Stable MLB Team IDs
 const teamMap = {
-  114: "cle", // Guardians
-  145: "cws", // White Sox
-  142: "min", // Twins
-  118: "kc",  // Royals
-  116: "det", // Tigers
-
-  158: "mil", // Brewers
-  112: "chc", // Cubs
-  138: "stl", // Cardinals
-  113: "cin", // Reds
-  134: "pit"  // Pirates
+  114: "cle",
+  145: "cws",
+  142: "min",
+  118: "kc",
+  116: "det",
+  158: "mil",
+  112: "chc",
+  138: "stl",
+  113: "cin",
+  134: "pit"
 };
 
 async function loadStandings() {
@@ -139,14 +138,18 @@ async function loadStandings() {
       div.teamRecords.forEach(team => {
 
         const teamId =
-  team.team?.id ||
-  team.team?.team?.id ||
-  team.team?.franchiseId ||
-  null;
-          if (!teamId) {
-  console.log("NO TEAM ID FOUND:", team);
-        const prefix = teamMap[teamId];
+          team.team?.id ||
+          team.team?.team?.id ||
+          team.team?.franchiseId ||
+          null;
 
+        // ✅ FIXED: this block is now correct and CLOSED properly
+        if (!teamId) {
+          console.log("NO TEAM ID FOUND:", team);
+          return;
+        }
+
+        const prefix = teamMap[teamId];
         if (!prefix) return;
 
         const w = team.wins;
