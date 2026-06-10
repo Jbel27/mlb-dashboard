@@ -116,6 +116,8 @@ async function loadStandings() {
     const res = await fetch(url);
     const data = await res.json();
 
+    console.log("API DATA:", data);
+
     if (!data.records) return;
 
     data.records.forEach(div => {
@@ -123,19 +125,17 @@ async function loadStandings() {
 
         const name = team.team?.name || "";
 
-        // ✅ SUPER ROBUST WINS/LOSSES EXTRACTION
+        // ✅ THIS is the correct MLB structure for this endpoint
         const w =
-          team.wins ??
-          team.leagueRecord?.wins ??
-          team.stats?.[0]?.splits?.[0]?.stat?.wins;
+          team.record?.wins ??
+          team.teamStats?.[0]?.splits?.[0]?.stat?.wins;
 
         const l =
-          team.losses ??
-          team.leagueRecord?.losses ??
-          team.stats?.[0]?.splits?.[0]?.stat?.losses;
+          team.record?.losses ??
+          team.teamStats?.[0]?.splits?.[0]?.stat?.losses;
 
         if (w == null || l == null) {
-          console.log("Missing stats:", name, team);
+          console.log("NO W/L FOUND:", name, team);
           return;
         }
 
