@@ -116,61 +116,49 @@ async function loadStandings() {
     const res = await fetch(url);
     const data = await res.json();
 
-    console.log("FULL RESPONSE:", data);
+    console.log("===== FULL API RESPONSE =====");
+    console.log(data);
 
-    if (!data.records) return;
+    if (!data.records) {
+      console.log("NO RECORDS FOUND");
+      return;
+    }
 
-    data.records.forEach(div => {
+    data.records.forEach((div, i) => {
+      console.log(`\n===== DIVISION ${i} =====`);
+
       div.teamRecords.forEach(team => {
+        console.log("TEAM OBJECT:", team);
 
-        const name = team.team?.name || "";
+        console.log("NAME OPTIONS:",
+          team.team?.name,
+          team.team?.displayName,
+          team.team?.teamName
+        );
 
-        // ✅ FIX: correct MLB structure
-        const w = team.leagueRecord?.wins;
-        const l = team.leagueRecord?.losses;
+        console.log("WINS OPTIONS:",
+          team.wins,
+          team.leagueRecord?.wins,
+          team.records?.leagueRecord?.wins
+        );
 
-        if (w === undefined || l === undefined) {
-          console.log("MISSING W/L:", team);
-          return;
-        }
-
-        let prefix = null;
-
-        if (name.includes("Cleveland")) prefix = "cle";
-        else if (name.includes("White Sox")) prefix = "cws";
-        else if (name.includes("Minnesota")) prefix = "min";
-        else if (name.includes("Kansas City")) prefix = "kc";
-        else if (name.includes("Detroit")) prefix = "det";
-        else if (name.includes("Milwaukee")) prefix = "mil";
-        else if (name.includes("Chicago Cubs")) prefix = "chc";
-        else if (name.includes("St. Louis")) prefix = "stl";
-        else if (name.includes("Cincinnati")) prefix = "cin";
-        else if (name.includes("Pittsburgh")) prefix = "pit";
-
-        if (!prefix) return;
-
-        const wEl = document.getElementById(`${prefix}-w`);
-        const lEl = document.getElementById(`${prefix}-l`);
-
-        if (wEl && lEl) {
-          wEl.innerText = w;
-          lEl.innerText = l;
-        }
+        console.log("LOSSES OPTIONS:",
+          team.losses,
+          team.leagueRecord?.losses,
+          team.records?.leagueRecord?.losses
+        );
       });
     });
 
     document.getElementById("lastUpdated").innerText =
-      "Last updated: " + new Date().toLocaleTimeString();
+      "Check console for API structure";
 
   } catch (err) {
     console.error("ERROR:", err);
-    document.getElementById("lastUpdated").innerText =
-      "Error loading data";
   }
 }
 
 window.onload = loadStandings;
-setInterval(loadStandings, 600000);
 </script>
 </body>
 </html>
