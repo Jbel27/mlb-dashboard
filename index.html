@@ -107,78 +107,52 @@ Loading updates...
 </div>
 
 <script>
+// Stable MLB Team IDs (this is the IMPORTANT FIX)
+const teamMap = {
+  114: "cle", // Guardians
+  145: "cws", // White Sox
+  142: "min", // Twins
+  118: "kc",  // Royals
+  116: "det", // Tigers
+
+  158: "mil", // Brewers
+  112: "chc", // Cubs
+  138: "stl", // Cardinals
+  113: "cin", // Reds
+  134: "pit"  // Pirates
+};
+
 async function loadStandings() {
   try {
-    const res = await fetch(
-  "https://mlb-standings-proxy.jbelmonte.workers.dev"
-);
+    const url =
+      "https://corsproxy.io/?" +
+      encodeURIComponent("https://statsapi.mlb.com/api/v1/standings");
 
-const data = await res.json();
+    const res = await fetch(url);
+    const data = await res.json();
 
     if (!data.records) {
-      console.log("No records found in API response.");
-      return;
+      throw new Error("No records in API response");
     }
 
-    const records = data.records;
-
-    records.forEach(div => {
+    data.records.forEach(div => {
       div.teamRecords.forEach(team => {
 
-        const name =
-  team.team?.name ||
-  team.team?.franchiseName ||
-  team.team?.teamName ||
-  "UNKNOWN";
+        const teamId = team.team?.id;
+        const prefix = teamMap[teamId];
+
+        if (!prefix) return;
+
         const w = team.wins;
         const l = team.losses;
 
-        console.log("TEAM:", w, l); // DEBUG
+        const wEl = document.getElementById(`${prefix}-w`);
+        const lEl = document.getElementById(`${prefix}-l`);
 
-        // AL Central
-        if (name.includes("Cleveland")) {
-          document.getElementById("cle-w").innerText = w;
-          document.getElementById("cle-l").innerText = l;
+        if (wEl && lEl) {
+          wEl.innerText = w;
+          lEl.innerText = l;
         }
-        if (name.includes("White Sox")) {
-          document.getElementById("cws-w").innerText = w;
-          document.getElementById("cws-l").innerText = l;
-        }
-        if (name.includes("Minnesota")) {
-          document.getElementById("min-w").innerText = w;
-          document.getElementById("min-l").innerText = l;
-        }
-        if (name.includes("Kansas City")) {
-          document.getElementById("kc-w").innerText = w;
-          document.getElementById("kc-l").innerText = l;
-        }
-        if (name.includes("Detroit")) {
-          document.getElementById("det-w").innerText = w;
-          document.getElementById("det-l").innerText = l;
-        }
-
-        // NL Central
-        if (name.includes("Milwaukee")) {
-          document.getElementById("mil-w").innerText = w;
-          document.getElementById("mil-l").innerText = l;
-        }
-        if (name.includes("Chicago Cubs")) {
-          document.getElementById("chc-w").innerText = w;
-          document.getElementById("chc-l").innerText = l;
-        }
-        if (name.includes("St. Louis")) {
-          document.getElementById("stl-w").innerText = w;
-          document.getElementById("stl-l").innerText = l;
-        }
-        if (name.includes("Cincinnati")) {
-          document.getElementById("cin-w").innerText = w;
-          document.getElementById("cin-l").innerText = l;
-        }
-        if (name.includes("Pittsburgh")) {
-          document.getElementById("pit-w").innerText = w;
-          document.getElementById("pit-l").innerText = l;
-        }
-
       });
     });
 
@@ -186,7 +160,7 @@ const data = await res.json();
       "Last updated: " + new Date().toLocaleTimeString();
 
   } catch (err) {
-    console.log("ERROR LOADING STANDINGS:", err);
+    console.error("ERROR LOADING STANDINGS:", err);
     document.getElementById("lastUpdated").innerText =
       "Error loading data (check console)";
   }
@@ -195,6 +169,6 @@ const data = await res.json();
 window.onload = loadStandings;
 setInterval(loadStandings, 10 * 60 * 1000);
 </script>
-    
+
 </body>
 </html>
