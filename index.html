@@ -138,7 +138,13 @@ async function loadStandings() {
     data.records.forEach(div => {
       div.teamRecords.forEach(team => {
 
-        const teamId = team.team?.id;
+        const teamId =
+  team.team?.id ||
+  team.team?.team?.id ||
+  team.team?.franchiseId ||
+  null;
+          if (!teamId) {
+  console.log("NO TEAM ID FOUND:", team);
         const prefix = teamMap[teamId];
 
         if (!prefix) return;
