@@ -116,27 +116,31 @@ async function loadStandings() {
     const res = await fetch(url);
     const data = await res.json();
 
-    if (!data.records) {
-      throw new Error("No records found");
-    }
+    console.log("FULL RESPONSE:", data);
+
+    if (!data.records) return;
 
     data.records.forEach(div => {
       div.teamRecords.forEach(team => {
 
         const name = team.team?.name || "";
-        const w = team.wins;
-        const l = team.losses;
+
+        // ✅ FIX: correct MLB structure
+        const w = team.leagueRecord?.wins;
+        const l = team.leagueRecord?.losses;
+
+        if (w === undefined || l === undefined) {
+          console.log("MISSING W/L:", team);
+          return;
+        }
 
         let prefix = null;
 
-        // ===== AL CENTRAL =====
         if (name.includes("Cleveland")) prefix = "cle";
-        else if (name.includes("Chicago White Sox")) prefix = "cws";
+        else if (name.includes("White Sox")) prefix = "cws";
         else if (name.includes("Minnesota")) prefix = "min";
         else if (name.includes("Kansas City")) prefix = "kc";
         else if (name.includes("Detroit")) prefix = "det";
-
-        // ===== NL CENTRAL =====
         else if (name.includes("Milwaukee")) prefix = "mil";
         else if (name.includes("Chicago Cubs")) prefix = "chc";
         else if (name.includes("St. Louis")) prefix = "stl";
@@ -161,12 +165,12 @@ async function loadStandings() {
   } catch (err) {
     console.error("ERROR:", err);
     document.getElementById("lastUpdated").innerText =
-      "Error loading data (check console)";
+      "Error loading data";
   }
 }
 
 window.onload = loadStandings;
-setInterval(loadStandings, 10 * 60 * 1000);
+setInterval(loadStandings, 600000);
 </script>
 </body>
 </html>
