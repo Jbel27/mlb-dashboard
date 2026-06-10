@@ -109,17 +109,11 @@ Loading updates...
 <script>
 async function loadStandings() {
   try {
-    const url =
-  "https://corsproxy.io/?" +
-  encodeURIComponent("https://statsapi.mlb.com/api/v1/standings");
+    const res = await fetch(
+  "https://mlb-standings-proxy.jbelmonte.workers.dev"
+);
 
-const res = await fetch(url);
-
-    const text = await res.text();
-
-    console.log("RAW RESPONSE:", text); // IMPORTANT DEBUG STEP
-
-    const data = JSON.parse(text);
+const data = await res.json();
 
     if (!data.records) {
       console.log("No records found in API response.");
